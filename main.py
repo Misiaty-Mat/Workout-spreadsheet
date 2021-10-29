@@ -1,14 +1,17 @@
-import requests
 from datetime import datetime
+from dotenv import load_dotenv
+import requests
 import os
 
-from requests.models import HTTPError
+from requests import HTTPError
 
-sheet_endpoint = "PASTE SHEETY ENDPOINT FOR YOUR SHEET HERE"
+load_dotenv()
+
 nutritionix_endpoint = "https://trackapi.nutritionix.com/v2/natural/exercise"
 
 NUTRITIONIX_APP_ID = os.environ.get("NUTRITIONIX_APP_ID")
 NUTRITIONIX_API_KEY = os.environ.get("NUTRITIONIX_API_KEY")
+SHEET_ENDPOINT = os.environ.get("SHEET_ENDPOINT")
 SHEET_TOKEN = os.environ.get("SHEET_TOKEN")
 
 
@@ -56,6 +59,6 @@ for exercise in exerciseses_json["exercises"]:
             "calories": exercise["nf_calories"],
         }
     }
-    post_row = requests.post(url=sheet_endpoint, json=row_data, headers=sheet_headers)
+    post_row = requests.post(url=SHEET_ENDPOINT, json=row_data, headers=sheet_headers)
     post_row.raise_for_status()
     print("Added to spreadsheet")
