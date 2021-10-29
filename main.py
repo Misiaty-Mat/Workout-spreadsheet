@@ -2,13 +2,15 @@ import requests
 from datetime import datetime
 import os
 
-os.environ["NUTRITIONIX_APP_ID"] = "cfed2c40"
-os.environ["NUTRITIONIX_API_KEY"] = "3b272f45197f0a101552b7db1fe3d5c3"
-os.environ["SHEET_TOKEN"] = "Bearer Misiatysvsvsvsvsvsdvefdwefqewrtjejetbsrbrtgfqwf2"
+from requests.models import HTTPError
+
+sheet_endpoint = "PASTE SHEETY ENDPOINT FOR YOUR SHEET HERE"
+nutritionix_endpoint = "https://trackapi.nutritionix.com/v2/natural/exercise"
 
 NUTRITIONIX_APP_ID = os.environ.get("NUTRITIONIX_APP_ID")
 NUTRITIONIX_API_KEY = os.environ.get("NUTRITIONIX_API_KEY")
 SHEET_TOKEN = os.environ.get("SHEET_TOKEN")
+
 
 nutritionix_headers = {"x-app-id": NUTRITIONIX_APP_ID, "x-app-key": NUTRITIONIX_API_KEY}
 sheet_headers = {
@@ -16,27 +18,29 @@ sheet_headers = {
     "Authorization": SHEET_TOKEN,
 }
 
-nutritionix_endpoint = "https://trackapi.nutritionix.com/v2/natural/exercise"
-sheet_endpoint = (
-    "https://api.sheety.co/3ecb86b5c571f6340fba2d7e39382dde/workout/arkusz1"
-)
-
+gender = input("What is your gender? (male/female):\n>> ")
+weight = float(input("How many kilograms do you weight?:\n>> "))
+height = float(input("How many centimeters do you have?:\n>> "))
+age = int(input("How old are you?:\n>> "))
 exercise = input("What was your exercise today?:\n>> ")
-
 
 nutritionix_params = {
     "query": exercise,
-    "gender": "male",
-    "weight_kg": 85.4,
-    "height_cm": 185.64,
-    "age": 20,
+    "gender": gender,
+    "weight_kg": weight,
+    "height_cm": height,
+    "age": age,
 }
 
-exercise_response = requests.post(
-    url=nutritionix_endpoint, json=nutritionix_params, headers=nutritionix_headers
-)
-exercise_response.raise_for_status()
-exerciseses_json = exercise_response.json()
+try:
+    exercise_response = requests.post(
+        url=nutritionix_endpoint, json=nutritionix_params, headers=nutritionix_headers
+    )
+    exercise_response.raise_for_status()
+    exerciseses_json = exercise_response.json()
+except HTTPError:
+    print("Wrong data in .env file")
+
 
 now = datetime.now()
 todays_date = now.strftime("%d/%m/%Y")
